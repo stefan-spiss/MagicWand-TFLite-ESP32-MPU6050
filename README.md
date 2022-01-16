@@ -64,4 +64,10 @@ To caqpture gestures, clear the serial monitor in the beginning, then start the 
 
 ## data
 
-Example dataset containing data samples for a wing (**W**), ring (**O**) and a slope (**L**) gesture. Further, there should be also **negative** data which can be obtained by running random captures. If not provided, random generated samples will be used instead.
+Example dataset containing gesture captures for a wing (**W**), a ring (**O**) and a slope (**L**) gesture performed by one person. There is also **negative** data that contains captures obtained while no gestures were performed. If not (too little) provided, random generated samples will be used instead (in addition). 
+
+To allow the usage of the example data set and the pre-trained model, the following image shows the orientation of the IMU used while capturing the gestures.
+
+<p align="center">
+    <img src="data/IMU_orientation.jpeg" alt="Image of IMU orientation" width="200">
+</p>
