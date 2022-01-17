@@ -54,7 +54,7 @@ void loop() {
     if (a == 'o') {
       Serial.print("-,-,-\n");
       capture = true;
-    } else if (a == 'p'') {
+    } else if (a == 'p') {
       capture = false;
       Serial.print("\n\n\n\n");
     }
