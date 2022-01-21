@@ -111,9 +111,15 @@ static bool UpdateData() {
   accY = a.acceleration.y;
   accZ = a.acceleration.z;
 
-  save_data[begin_index++] = 1000 * accX;
-  save_data[begin_index++] = 1000 * accY;
-  save_data[begin_index++] = 1000 * accZ;
+  /* save_data[begin_index++] = 1000 * accX; */
+  /* save_data[begin_index++] = 1000 * accY; */
+  /* save_data[begin_index++] = 1000 * accZ; */
+  /* save_data[begin_index++] = 100.0f * accX; */
+  /* save_data[begin_index++] = 100.0f * accY; */
+  /* save_data[begin_index++] = 100.0f * accZ; */
+  save_data[begin_index++] = accX;
+  save_data[begin_index++] = accY;
+  save_data[begin_index++] = accZ;
 
   if (begin_index >= 600) {
     begin_index = 0;
