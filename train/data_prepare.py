@@ -38,7 +38,10 @@ LABEL_NAME = "gesture"
 DATA_NAME = "accel_ms2_xyz"
 folders = ["wing", "ring", "slope"]
 names = [
-    "stefan"
+    "stefan",
+    "patrick",
+    "justin",
+    "yeongmi"
 ]
 
 
@@ -73,17 +76,17 @@ def generate_negative_data(data, number_samples):  # pylint: disable=redefined-o
       dic = {DATA_NAME: [], LABEL_NAME: "negative", "name": "negative7"}
     else:
       dic = {DATA_NAME: [], LABEL_NAME: "negative", "name": "negative6"}
-    start_x = (random.random() - 0.5) * 2000
-    start_y = (random.random() - 0.5) * 2000
-    start_z = (random.random() - 0.5) * 2000
-    x_increase = (random.random() - 0.5) * 10
-    y_increase = (random.random() - 0.5) * 10
-    z_increase = (random.random() - 0.5) * 10
+    start_x = (random.random() - 0.5) * 30
+    start_y = (random.random() - 0.5) * 30
+    start_z = (random.random() - 0.5) * 30
+    x_increase = (random.random() - 0.5)
+    y_increase = (random.random() - 0.5)
+    z_increase = (random.random() - 0.5)
     for j in range(128):
       dic[DATA_NAME].append([
-          start_x + j * x_increase + (random.random() - 0.5) * 6,
-          start_y + j * y_increase + (random.random() - 0.5) * 6,
-          start_z + j * z_increase + (random.random() - 0.5) * 6
+          start_x + j * x_increase + (random.random() - 0.5) * 0.6,
+          start_y + j * y_increase + (random.random() - 0.5) * 0.6,
+          start_z + j * z_increase + (random.random() - 0.5) * 0.6
       ])
     data.append(dic)
   # Random
@@ -95,9 +98,9 @@ def generate_negative_data(data, number_samples):  # pylint: disable=redefined-o
     else:
       dic = {DATA_NAME: [], LABEL_NAME: "negative", "name": "negative6"}
     for j in range(128):
-      dic[DATA_NAME].append([(random.random() - 0.5) * 1000,
-                             (random.random() - 0.5) * 1000,
-                             (random.random() - 0.5) * 1000])
+      dic[DATA_NAME].append([(random.random() - 0.5) * 50,
+                             (random.random() - 0.5) * 50,
+                             (random.random() - 0.5) * 50])
     data.append(dic)
   # Stay still
   for i in range(number_samples//3):
@@ -107,14 +110,14 @@ def generate_negative_data(data, number_samples):  # pylint: disable=redefined-o
       dic = {DATA_NAME: [], LABEL_NAME: "negative", "name": "negative7"}
     else:
       dic = {DATA_NAME: [], LABEL_NAME: "negative", "name": "negative6"}
-    start_x = (random.random() - 0.5) * 2000
-    start_y = (random.random() - 0.5) * 2000
-    start_z = (random.random() - 0.5) * 2000
+    start_x = (random.random() - 0.5) * 2
+    start_y = (random.random() - 0.5) * 2
+    start_z = (random.random() - 0.5) * 2
     for j in range(128):
       dic[DATA_NAME].append([
-          start_x + (random.random() - 0.5) * 40,
-          start_y + (random.random() - 0.5) * 40,
-          start_z + (random.random() - 0.5) * 40
+          start_x + (random.random() - 0.5) * 0.4,
+          start_y + (random.random() - 0.5) * 0.4,
+          start_z + (random.random() - 0.5) * 0.4
       ])
     data.append(dic)
 
