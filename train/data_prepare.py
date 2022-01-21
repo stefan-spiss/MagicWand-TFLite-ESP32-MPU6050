@@ -30,7 +30,7 @@ from __future__ import print_function
 
 import csv
 import json
-# import os
+import os
 import random
 import math
 
@@ -44,7 +44,7 @@ names = [
 
 def prepare_original_data(folder, name, data, file_to_read):  # pylint: disable=redefined-outer-name
   """Read collected data from files."""
-  if folder != "negative":
+  if os.path.isfile(file_to_read):
     with open(file_to_read, "r") as f:
       lines = csv.reader(f)
       data_new = {}
@@ -53,7 +53,7 @@ def prepare_original_data(folder, name, data, file_to_read):  # pylint: disable=
       data_new["name"] = name
       for idx, line in enumerate(lines):  # pylint: disable=unused-variable,redefined-outer-name
         if len(line) == 3:
-          if line[2] == "-" and data_new[DATA_NAME]:
+          if line[2] == "-" and data_new[DATA_NAME] or (folder == "negative" and len(data_new[DATA_NAME]) == 120):
             data.append(data_new)
             data_new = {}
             data_new[LABEL_NAME] = folder
@@ -62,25 +62,6 @@ def prepare_original_data(folder, name, data, file_to_read):  # pylint: disable=
           elif line[2] != "-":
             data_new[DATA_NAME].append([float(i) for i in line[0:3]])
       data.append(data_new)
-  else:
-    with open(file_to_read, "r") as f:
-      lines = csv.reader(f)
-      data_new = {}
-      data_new[LABEL_NAME] = folder
-      data_new[DATA_NAME] = []
-      data_new["name"] = name
-      for idx, line in enumerate(lines):
-        if len(line) == 3 and line[2] != "-":
-          if len(data_new[DATA_NAME]) == 120: # maximum 120 entries
-            data.append(data_new)
-            data_new = {}
-            data_new[LABEL_NAME] = folder
-            data_new[DATA_NAME] = []
-            data_new["name"] = name
-          else:
-            data_new[DATA_NAME].append([float(i) for i in line[0:3]])
-      data.append(data_new)
-
 
 def generate_negative_data(data, number_samples):  # pylint: disable=redefined-outer-name
   """Generate negative data labeled as 'negative6~8'."""
