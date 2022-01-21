@@ -49,7 +49,7 @@ def augment_data(original_data, original_label):
     # Sequence shift
     for num in range(5):  # pylint: disable=unused-variable
       new_data.append((np.array(data, dtype=np.float32) +
-                       (random.random() - 0.5) * 200).tolist())
+                       (random.random() - 0.5) * 4).tolist())
       new_label.append(label)
     # Random noise
     tmp_data = [[0 for i in range(len(data[0]))] for j in range(len(data))]

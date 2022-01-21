@@ -63,7 +63,7 @@ class DataLoader(object):
 
   def pad(self, data, seq_length, dim):
     """Get neighbour padding."""
-    noise_level = 20
+    noise_level = 10
     padded_data = []
     # Before- Neighbour padding
     tmp_data = (np.random.rand(seq_length, dim) - 0.5) * noise_level + data[0]
