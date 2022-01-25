@@ -17,7 +17,10 @@ names = [
     "stefan",
     "patrick",
     "justin",
-    "yeongmi"
+    "yeongmi",
+    "arthur",
+    "kai",
+    "nico"
 ]
 
 if __name__ == "__main__":
