@@ -21,13 +21,12 @@ limitations under the License.
 #include "gesture_predictor.h"
 #include "magic_wand_model_data.h"
 #include "output_handler.h"
-#include "tensorflow/lite/experimental/micro/kernels/micro_ops.h"
-#include "tensorflow/lite/experimental/micro/micro_error_reporter.h"
-#include "tensorflow/lite/experimental/micro/micro_interpreter.h"
-#include "tensorflow/lite/experimental/micro/micro_mutable_op_resolver.h"
-#include "tensorflow/lite/experimental/micro/kernels/all_ops_resolver.h"
+#include "tensorflow/lite/micro/kernels/micro_ops.h"
+#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
+//#include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/schema/schema_generated.h"
-#include "tensorflow/lite/version.h"
 
 // Globals, used for compatibility with Arduino-style sketches.
 namespace {
@@ -70,23 +69,15 @@ void setup() {
   // An easier approach is to just use the AllOpsResolver, but this will
   // incur some penalty in code space for op implementations that are not
   // needed by this graph.
+  static tflite::MicroMutableOpResolver<6> micro_mutable_op_resolver;  // NOLINT
+  micro_mutable_op_resolver.AddConv2D();
+  micro_mutable_op_resolver.AddDepthwiseConv2D();
+  micro_mutable_op_resolver.AddFullyConnected();
+  micro_mutable_op_resolver.AddMaxPool2D();
+  micro_mutable_op_resolver.AddSoftmax();
+  micro_mutable_op_resolver.AddReshape();
 
-//  static tflite::MicroMutableOpResolver micro_mutable_op_resolver;  // NOLINT
-//  micro_mutable_op_resolver.AddBuiltin(
-//      tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
-//      tflite::ops::micro::Register_DEPTHWISE_CONV_2D());
-//  micro_mutable_op_resolver.AddBuiltin(
-//      tflite::BuiltinOperator_MAX_POOL_2D,
-//      tflite::ops::micro::Register_MAX_POOL_2D());
-//  micro_mutable_op_resolver.AddBuiltin(tflite::BuiltinOperator_CONV_2D,
-//                                       tflite::ops::micro::Register_CONV_2D());
-//  micro_mutable_op_resolver.AddBuiltin(
-//      tflite::BuiltinOperator_FULLY_CONNECTED,
-//      tflite::ops::micro::Register_FULLY_CONNECTED());
-//  micro_mutable_op_resolver.AddBuiltin(tflite::BuiltinOperator_SOFTMAX,
-//                                       tflite::ops::micro::Register_SOFTMAX());
-
-  static tflite::ops::micro::AllOpsResolver micro_mutable_op_resolver;  // NOLINT
+  //static tflite::AllOpsResolver micro_mutable_op_resolver;  // NOLINT
 
   // Build an interpreter to run the model with
   static tflite::MicroInterpreter static_interpreter(

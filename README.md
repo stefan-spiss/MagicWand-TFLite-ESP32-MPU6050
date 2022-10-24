@@ -10,7 +10,7 @@ For installation instructions see <https://www.arduino.cc/en/software>.
 
 #### ESP32 Support
 
-Setup the Arduino IDE to support ESP32 microcontrollers following the instructions on the espressif documentation page: <https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html>. The version used in this project was 2.0.2
+Setup the Arduino IDE to support ESP32 microcontrollers following the instructions on the espressif documentation page: <https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html>. The version used in this project was 2.0.5
 
 #### MPU6050 Support
 
@@ -18,7 +18,7 @@ Install the Adafruit MPU6050 library for the IMU using the Library Manager of th
 
 #### TensorFlowLite for ESP32
 
-Install the TensorFloorLite package for the ESP32 using the Arduino IDE Library Manager. The package is called **TensorFLowLite_ESP32** and can be found on github at <https://github.com/tanakamasayuki/Arduino_TensorFlowLite_ESP32>. The project was tested with version 0.9.0.
+Install the TensorFloorLite package for the ESP32 using the Arduino IDE Library Manager. The package is called **TensorFLowLite_ESP32** and can be found on github at <https://github.com/tanakamasayuki/Arduino_TensorFlowLite_ESP32>. The project was tested with version 1.0.0.
 
 ## magic_wand_esp32_mpu6050
 
@@ -28,11 +28,21 @@ Basic magic wand example code taken from the Arduino library TensorFLowLite_ESP3
 
 #### magic_wand_esp32_mpu6050.ino
 
-The `tflite::ops::micro::AllOpsResolver` was used to support the CNN model from the training script (instead of the `tflite::MicroMutableOpResolver`).
+Update to new version of TensorFlowLite library:
+    - Change of header file paths
+    - Update of how operations are added for MicroMutableOpResolver
 
 #### accelerometer_handler.cpp
 
 Implementation of setup and reading of accelerometer data from MPU6050 IMU.
+
+#### accelerometer_handler.h
+Update to new version of TensorFlowLite library:
+    - Change of header file paths
+
+#### output_handler.h
+Update to new version of TensorFlowLite library:
+    - Change of header file paths
 
 #### magic_wand_model_data.cpp
 
