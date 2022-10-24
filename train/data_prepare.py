@@ -44,7 +44,10 @@ names = [
     "yeongmi",
     "arthur",
     "kai",
-    "nico"
+    "nico",
+    "filip",
+    "lukas",
+    "peter"
 ]
 
 
