@@ -28,7 +28,7 @@ Basic magic wand example code taken from the Arduino library TensorFLowLite_ESP3
 
 #### magic_wand_esp32_mpu6050.ino
 
-The `tflite::ops::micro::AllOpseResolver` was used to support the CNN model from the training script (instead of the `tflite::MicroMutableOpResolver`).
+The `tflite::ops::micro::AllOpsResolver` was used to support the CNN model from the training script (instead of the `tflite::MicroMutableOpResolver`).
 
 #### accelerometer_handler.cpp
 
