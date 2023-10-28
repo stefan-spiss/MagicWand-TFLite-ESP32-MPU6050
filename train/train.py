@@ -28,6 +28,7 @@ from data_load import DataLoader
 
 import numpy as np
 import tensorflow as tf
+from keras.callbacks import ModelCheckpoint
 
 logdir = "logs/scalars/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
@@ -70,7 +71,9 @@ def build_cnn(seq_length):
   print("Built CNN.")
   if not os.path.exists(model_path):
     os.makedirs(model_path)
-  model.load_weights("./netmodels/CNN/weights.h5")
+  if os.path.exists(os.path.join(model_path, 'weights.h5')):
+      print('loading previous weights')
+      model.load_weights("./netmodels/CNN/weights.h5")
   return model, model_path
 
 
@@ -108,17 +111,49 @@ def build_net(args, seq_length):
     print("Please input correct model name.(CNN  LSTM)")
   return model, model_path
 
+def eval_net(model, test_data, test_labels):
+  print("********** Evaluation test data **********")
+  loss, acc = model.evaluate(test_data)
+  pred = np.argmax(model.predict(test_data), axis=1)
+  confusion = tf.math.confusion_matrix(labels=tf.constant(test_labels),
+                                       predictions=tf.constant(pred),
+                                       num_classes=4)
+  print(confusion)
+  print("Loss {}, Accuracy {}".format(loss, acc))
+
+def prepare_and_save_tflite_nets(model, filename, filename_quantized):
+  # Convert the model to the TensorFlow Lite format without quantization
+  converter = tf.lite.TFLiteConverter.from_keras_model(model)
+  tflite_model = converter.convert()
+
+  # Save the model to disk
+  open(filename, "wb").write(tflite_model)
+
+  # Convert the model to the TensorFlow Lite format with quantization
+  converter = tf.lite.TFLiteConverter.from_keras_model(model)
+  converter.optimizations = [tf.lite.Optimize.DEFAULT]
+  tflite_model = converter.convert()
+
+  # Save the model to disk
+  open(filename_quantized, "wb").write(tflite_model)
+
+  basic_model_size = os.path.getsize("model.tflite")
+  print("Basic model is %d bytes" % basic_model_size)
+  quantized_model_size = os.path.getsize("model_quantized.tflite")
+  print("Quantized model is %d bytes" % quantized_model_size)
+  difference = basic_model_size - quantized_model_size
+  print("Difference is %d bytes" % difference)
 
 def train_net(
     model,
-    model_path,  # pylint: disable=unused-argument
-    train_len,  # pylint: disable=unused-argument
+    model_path,
     train_data,
     valid_len,
     valid_data,  # pylint: disable=unused-argument
     test_len,
     test_data,
-    kind):
+    kind,
+    weights_metric="val_accuracy"):
   """Trains the model."""
   calculate_model_size(model)
   epochs = 50
@@ -132,52 +167,43 @@ def train_net(
     valid_data = valid_data.map(reshape_function)
   test_labels = np.zeros(test_len)
   idx = 0
-  for data, label in test_data:  # pylint: disable=unused-variable
+  for _, label in test_data:  # pylint: disable=unused-variable
     test_labels[idx] = label.numpy()
     idx += 1
   train_data = train_data.batch(batch_size).repeat()
   valid_data = valid_data.batch(batch_size)
   test_data = test_data.batch(batch_size)
+  chckpt_path = os.path.join(model_path, 'weights_best_' + weights_metric + '.ckpt')
+
+  mode = "min"
+  if weights_metric == "val_accuracy" or weights_metric == "accuracy":
+      mode = "max"
+  chckpt_fct = ModelCheckpoint(chckpt_path, monitor=weights_metric, save_best_only=True, mode=mode, save_weights_only=True)
   model.fit(train_data,
             epochs=epochs,
             validation_data=valid_data,
             steps_per_epoch=1000,
             validation_steps=int((valid_len - 1) / batch_size + 1),
-            callbacks=[tensorboard_callback])
-  loss, acc = model.evaluate(test_data)
-  pred = np.argmax(model.predict(test_data), axis=1)
-  confusion = tf.math.confusion_matrix(labels=tf.constant(test_labels),
-                                       predictions=tf.constant(pred),
-                                       num_classes=4)
-  print(confusion)
-  print("Loss {}, Accuracy {}".format(loss, acc))
-  # Convert the model to the TensorFlow Lite format without quantization
-  converter = tf.lite.TFLiteConverter.from_keras_model(model)
-  tflite_model = converter.convert()
+            callbacks=[tensorboard_callback, chckpt_fct])
+  idx = 0
+  print("*********************************************************************************")
+  print("Model after last epoch:")
+  eval_net(model, test_data, test_labels)
+  model.save(os.path.join(model_path, 'weights.h5'))
+  prepare_and_save_tflite_nets(model, "model.tflite", "model_quantized.tflite")
 
-  # Save the model to disk
-  open("model.tflite", "wb").write(tflite_model)
-
-  # Convert the model to the TensorFlow Lite format with quantization
-  converter = tf.lite.TFLiteConverter.from_keras_model(model)
-  converter.optimizations = [tf.lite.Optimize.DEFAULT]
-  tflite_model = converter.convert()
-
-  # Save the model to disk
-  open("model_quantized.tflite", "wb").write(tflite_model)
-
-  basic_model_size = os.path.getsize("model.tflite")
-  print("Basic model is %d bytes" % basic_model_size)
-  quantized_model_size = os.path.getsize("model_quantized.tflite")
-  print("Quantized model is %d bytes" % quantized_model_size)
-  difference = basic_model_size - quantized_model_size
-  print("Difference is %d bytes" % difference)
-
+  print("*********************************************************************************")
+  print("Model of epoch with best " + weights_metric + ":")
+  model.load_weights(chckpt_path)
+  eval_net(model, test_data, test_labels)
+  model.save(os.path.join(model_path, 'weights_best_' + weights_metric + '.h5'))
+  prepare_and_save_tflite_nets(model, "model_best_" + weights_metric + ".tflite", "model_quantized_best_" + weights_metric + ".tflite")
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("--model", "-m")
   parser.add_argument("--person", "-p")
+  parser.add_argument("--weights_metric", default="val_accuracy", choices=["val_accuracy", "val_loss", "accuracy", "loss"])
   args = parser.parse_args()
 
   seq_length = 128
@@ -195,7 +221,7 @@ if __name__ == "__main__":
   model, model_path = build_net(args, seq_length)
 
   print("Start training...")
-  train_net(model, model_path, train_len, train_data, valid_len, valid_data,
-            test_len, test_data, args.model)
+  train_net(model, model_path, train_data, valid_len, valid_data,
+            test_len, test_data, args.model, args.weights_metric)
 
   print("Training finished!")
