@@ -18,7 +18,7 @@ void setup(void) {
   // Try to initialize!
   while (!mpu.begin()) {
     Serial.println("Failed to find MPU6050 chip");
-    delay(10)
+    delay(10);
     //while (1) {
       //delay(10);
     //}
