@@ -47,7 +47,18 @@ names = [
     "nico",
     "filip",
     "lukas",
-    "peter"
+    "peter",
+    "Elekas",
+    "ruben",
+    "leo",
+    "alex",
+    "best",
+    "Sonja_Jasmin",
+    "fabian",
+    "andimeno",
+    "sm",
+    "sophia_23",
+    "LJ",
 ]
 
 

@@ -1,0 +1,5 @@
+numpy
+tensorflow
+seaborn
+pickleshare
+jupyterlab
