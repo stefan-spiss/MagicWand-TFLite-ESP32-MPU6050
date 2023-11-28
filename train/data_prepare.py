@@ -59,6 +59,9 @@ names = [
     "sm",
     "sophia_23",
     "LJ",
+    "Philip_Benni",
+    "julias",
+    "Tobi",
 ]
 
 
